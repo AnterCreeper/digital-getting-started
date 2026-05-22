@@ -120,7 +120,7 @@
 \textbf{后面会学到的 setup / hold / metastability / protocol，都是在保护这层抽象不失效。}
 \end{frame}
 
-\begin{frame}{The Integrated Circuit Era}
+\begin{frame}{Process-Level Integration}
 \centering
 \begin{columns}[T]
   \column{0.48\linewidth}
@@ -140,14 +140,14 @@
   \small
   \begin{itemize}
     \item Kilby 与 Noyce 共同开启集成电路时代
-    \item Noyce 的硅平面工艺更适合大规模制造
-    \item 关键变化不是``发明了一个新器件''
-    \item 而是：电子工程的默认起点开始从\textbf{分立范式}转向\textbf{集成范式}
+    \item 硅平面工艺让器件与互连更容易稳定复制
+    \item 集成首先是一种\textbf{可制造、可复制}的工艺能力
+    \item 后面的单元、IP、系统集成，都建立在这一层之上
   \end{itemize}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Analog Is Also Integrated}
+\begin{frame}{Block-Level Integration}
 \begin{columns}[T]
   \column{0.42\linewidth}
   \centering
@@ -165,18 +165,31 @@
   \small
   \begin{itemize}
     \item Widlar 的意义，不只是一个传奇人物
-    \item 而是说明：\textbf{模拟电路同样被集成化重塑}
+    \item 而是说明：\textbf{工艺成熟后，功能单元可以被压进标准芯片}
     \item 从单片运放到今天的 ADC、PMIC、driver 芯片
-    \item 模拟、数字、混合信号都在走向更高集成度
+    \item 集成化开始从``器件同片''走向``功能成块''
   \end{itemize}
 
   \vspace{0.4em}
   \footnotesize
-  历史在这里是证据：集成化不是数字世界的特例，而是现代电子工程的共同方向。
+  历史在这里是证据：集成化不只堆积晶体管，它还在制造标准功能单元。
 \end{columns}
 \end{frame}
 
-\begin{frame}{From Discrete Circuits to SoC}
+\begin{frame}{IP-Level Integration}
+\begin{itemize}
+  \item 单元级集成稳定后，设计活动本身也开始集成化
+  \item IP 复用让设计公司不必从零开发每个子系统
+  \item 典型积木：CPU 核、DDR / USB / PCIe PHY、ADC、PLL、存储控制器
+  \item 设计重点开始转向接口、约束、验证流程与工具链组织
+\end{itemize}
+
+\vspace{0.4em}
+\footnotesize
+标准接口、EDA 工具和团队分工，不是附属品，而是 IP 级集成成立的条件。
+\end{frame}
+
+\begin{frame}{System-Level Integration}
 \centering
 \begin{columns}[T]
   \column{0.48\linewidth}
@@ -196,24 +209,10 @@
 \vspace{0.6em}
 \small
 \textbf{结论}：今天电子工程的默认起点，是在芯片级完成高度集成，再把这些集成器件组织成系统。
-\end{frame}
 
-\begin{frame}{SoC Methodology and Complete Solutions}
-\begin{itemize}
-  \item SoC 不只是``一种芯片''，而是一种系统构建范式
-  \item IP 复用让设计公司不必从零开发每个子系统
-  \item 典型积木：CPU 核、DDR / USB / PCIe PHY、ADC、PLL、存储控制器
-  \item 芯片公司还会提供完整方案：
-  \begin{itemize}
-    \item 参考设计、评估板、原理图
-    \item 在线设计工具和参数计算工具
-    \item 应用文档、软件库和支持体系
-  \end{itemize}
-\end{itemize}
-
-\vspace{0.4em}
+\vspace{0.3em}
 \footnotesize
-现代工程师越来越少``从分立元件重新搭系统''，越来越多是在做选型、参数配置与系统整合。
+参考设计、评估板、软件库与在线工具，都是系统级集成继续向外延伸的结果。
 \end{frame}
 
 \begin{frame}{From Die to System}
