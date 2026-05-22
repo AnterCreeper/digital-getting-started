@@ -27,10 +27,13 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Resolve symlinks for Pages artifact
+        run: cp -rL ./site ./site-deploy
+
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./site
+          path: ./site-deploy
 
       - name: Deploy to GitHub Pages
         id: deployment
