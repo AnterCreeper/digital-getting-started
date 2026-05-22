@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Circuit Course Hub</title>
+  <meta name="description" content="本科生数字电路课程资料：PPT、讲义、源文件一站式静态站点。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Digital Circuits · Undergraduate</p>
+      <h1>Teaching Repository Portal</h1>
+      <p class="lead">章节化管理课件、讲义和源码，支持直接部署为静态网页。</p>
+    </div>
+    <div class="hero-grid" aria-hidden="true"></div>
+  </header>
+
+  <main class="container">
+    <section class="toolbar">
+      <input id="search-input" type="text" placeholder="搜索标题、关键词、章节...">
+      <select id="chapter-filter">
+        <option value="">全部章节</option>
+        <option value='ch01-chip-systems-industry'>第一章：芯片、系统与产业全景</option>
+<option value='ch02-eda-tools-fpga'>第二章：开发环境、EDA 工具与 FPGA 实践基础</option>
+<option value='ch03-digital-fundamentals'>第三章：数字电路基础</option>
+      </select>
+      <span id="result-count">共 4 讲</span>
+    </section>
+
+    <section id="lecture-list" class="lecture-list">
+      
+<article class="lecture-card" data-chapter="ch01-chip-systems-industry" data-keywords="chip package pcb soc fabless eda abstraction">
+  <div class="lecture-topline">
+    <span class="chapter-pill">第一章：芯片、系统与产业全景</span>
+    <span class="meta">本科基础 · ~22 min</span>
+  </div>
+  <h2>芯片、系统与产业全景</h2>
+  <p class="subtitle">从数字抽象到板级系统，再到产业链分工</p>
+  <p class="summary">建立芯片、封装、PCB 系统、芯片类型与产业链的全景地图，并引入数字设计的抽象与分层思想。</p>
+  <div class="tags"><span class='tag'>chip</span><span class='tag'>package</span><span class='tag'>pcb</span><span class='tag'>soc</span><span class='tag'>fabless</span><span class='tag'>eda</span><span class='tag'>abstraction</span></div>
+  <div class="actions"><a class='btn btn-primary' href='assets/lectures/ch01-chip-systems-industry_l01-chip-systems-industry/slides.pdf' target='_blank' rel='noopener'>Slides PDF</a><a class='btn btn-primary' href='assets/lectures/ch01-chip-systems-industry_l01-chip-systems-industry/handout.pdf' target='_blank' rel='noopener'>Handout PDF</a><a class='btn btn-secondary' href='assets/lectures/ch01-chip-systems-industry_l01-chip-systems-industry/ch01-chip-systems-industry_l01-chip-systems-industry-source.zip' download>Source ZIP</a></div>
+  <p class="updated">Updated: 2026-05-19</p>
+</article>
+
+
+<article class="lecture-card" data-chapter="ch02-eda-tools-fpga" data-keywords="iverilog gtkwave yosys simulation synthesis fpga basys3 verilog">
+  <div class="lecture-topline">
+    <span class="chapter-pill">第二章：开发环境、EDA 工具与 FPGA 实践基础</span>
+    <span class="meta">本科基础 · ~22 min</span>
+  </div>
+  <h2>开发环境、EDA 工具与 FPGA 实践基础</h2>
+  <p class="subtitle">从仿真到综合:搭建可验证的数字设计最小工程回路</p>
+  <p class="summary">用开源工具链完成写 RTL → 仿真 → 看波形 → 综合 → 查看门级结构的完整工程回路，为后续所有章节建立可验证的工具关节。</p>
+  <div class="tags"><span class='tag'>iverilog</span><span class='tag'>gtkwave</span><span class='tag'>yosys</span><span class='tag'>simulation</span><span class='tag'>synthesis</span><span class='tag'>fpga</span><span class='tag'>basys3</span><span class='tag'>verilog</span></div>
+  <div class="actions"><a class='btn btn-primary' href='assets/lectures/ch02-eda-tools-fpga_l01-eda-tools-fpga/slides.pdf' target='_blank' rel='noopener'>Slides PDF</a><a class='btn btn-primary' href='assets/lectures/ch02-eda-tools-fpga_l01-eda-tools-fpga/handout.pdf' target='_blank' rel='noopener'>Handout PDF</a><a class='btn btn-secondary' href='assets/lectures/ch02-eda-tools-fpga_l01-eda-tools-fpga/ch02-eda-tools-fpga_l01-eda-tools-fpga-source.zip' download>Source ZIP</a></div>
+  <p class="updated">Updated: 2026-05-19</p>
+</article>
+
+
+<article class="lecture-card" data-chapter="ch03-digital-fundamentals" data-keywords="digital abstraction mos cmos inverter nand nor boolean algebra combinational logic hazard">
+  <div class="lecture-topline">
+    <span class="chapter-pill">第三章：数字电路基础</span>
+    <span class="meta">本科基础 · ~90 min</span>
+  </div>
+  <h2>数字抽象、CMOS 与组合逻辑基础</h2>
+  <p class="subtitle">从器件开关、反相器到组合逻辑与毛刺现象</p>
+  <p class="summary">建立数字抽象的物理依据，理解 CMOS 反相器和基础门电路的工作方式，并完成从逻辑表达式到组合逻辑结构的双向映射。</p>
+  <div class="tags"><span class='tag'>digital abstraction</span><span class='tag'>mos</span><span class='tag'>cmos</span><span class='tag'>inverter</span><span class='tag'>nand</span><span class='tag'>nor</span><span class='tag'>boolean algebra</span><span class='tag'>combinational logic</span><span class='tag'>hazard</span></div>
+  <div class="actions"><a class='btn btn-primary' href='assets/lectures/ch03-digital-fundamentals_l01-digital-abstraction-comb-logic/slides.pdf' target='_blank' rel='noopener'>Slides PDF</a><a class='btn btn-primary' href='assets/lectures/ch03-digital-fundamentals_l01-digital-abstraction-comb-logic/handout.pdf' target='_blank' rel='noopener'>Handout PDF</a><a class='btn btn-secondary' href='assets/lectures/ch03-digital-fundamentals_l01-digital-abstraction-comb-logic/ch03-digital-fundamentals_l01-digital-abstraction-comb-logic-source.zip' download>Source ZIP</a></div>
+  <p class="updated">Updated: 2026-05-20</p>
+</article>
+
+
+<article class="lecture-card" data-chapter="ch03-digital-fundamentals" data-keywords="sequential logic register flip-flop fsm setup hold metastability clock skew clock domain">
+  <div class="lecture-topline">
+    <span class="chapter-pill">第三章：数字电路基础</span>
+    <span class="meta">本科基础 · ~90 min</span>
+  </div>
+  <h2>时序逻辑、状态机与时序约束基础</h2>
+  <p class="subtitle">从寄存器与状态演化到 setup、hold 与亚稳态边界</p>
+  <p class="summary">建立时序逻辑和同步系统的基本语义，理解寄存器边界、组合逻辑锥、建立保持时间以及亚稳态与时钟域边界的工程含义。</p>
+  <div class="tags"><span class='tag'>sequential logic</span><span class='tag'>register</span><span class='tag'>flip-flop</span><span class='tag'>fsm</span><span class='tag'>setup</span><span class='tag'>hold</span><span class='tag'>metastability</span><span class='tag'>clock skew</span><span class='tag'>clock domain</span></div>
+  <div class="actions"><a class='btn btn-primary' href='assets/lectures/ch03-digital-fundamentals_l02-sequential-logic-timing/slides.pdf' target='_blank' rel='noopener'>Slides PDF</a><a class='btn btn-primary' href='assets/lectures/ch03-digital-fundamentals_l02-sequential-logic-timing/handout.pdf' target='_blank' rel='noopener'>Handout PDF</a><a class='btn btn-secondary' href='assets/lectures/ch03-digital-fundamentals_l02-sequential-logic-timing/ch03-digital-fundamentals_l02-sequential-logic-timing-source.zip' download>Source ZIP</a></div>
+  <p class="updated">Updated: 2026-05-20</p>
+</article>
+
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Generated on 2026-05-22 · Build by scripts/build_site.py</p>
+  </footer>
+
+  <script src="assets/main.js"></script>
+</body>
+</html>

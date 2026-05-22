@@ -1,0 +1,10 @@
+{
+  "chapter_title": "第一章：芯片、系统与产业全景",
+  "title": "芯片、系统与产业全景",
+  "subtitle": "从数字抽象到板级系统，再到产业链分工",
+  "summary": "建立芯片、封装、PCB 系统、芯片类型与产业链的全景地图，并引入数字设计的抽象与分层思想。",
+  "keywords": ["chip", "package", "pcb", "soc", "fabless", "eda", "abstraction"],
+  "difficulty": "本科基础",
+  "duration": "~22 min",
+  "updated": "2026-05-19"
+}

@@ -1,0 +1,51 @@
+% Shared Beamer style for this repository.
+\usepackage[fontset=none]{ctex}
+\usepackage{fontspec}
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+\setCJKmainfont{Noto Serif CJK SC}[BoldFont={Noto Serif CJK SC Bold}]
+\setCJKsansfont{Noto Sans CJK SC}[BoldFont={Noto Sans CJK SC Bold}]
+\setCJKmonofont{Noto Sans Mono CJK SC}
+
+\usetheme{Madrid}
+\usefonttheme{serif}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning}
+
+% Color system
+\definecolor{dcPrimary}{RGB}{20,72,110}
+\definecolor{dcAccent}{RGB}{180,62,45}
+\definecolor{dcMuted}{RGB}{225,238,250}
+\definecolor{dcCodeBG}{RGB}{247,248,250}
+\definecolor{dcCodeFrame}{RGB}{208,214,220}
+
+\setbeamercolor{structure}{fg=dcPrimary}
+\setbeamercolor{palette primary}{fg=dcPrimary,bg=dcMuted}
+\setbeamercolor{palette secondary}{fg=dcPrimary,bg=dcMuted!90}
+\setbeamercolor{palette tertiary}{fg=dcPrimary,bg=dcMuted!80}
+\setbeamercolor{frametitle}{fg=dcPrimary,bg=dcMuted}
+\setbeamercolor{title}{fg=dcPrimary}
+\setbeamercolor{alerted text}{fg=dcAccent}
+\setbeamercolor{item}{fg=dcPrimary}
+\setbeamercolor{footline}{fg=dcPrimary}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{dcCodeBG},
+  frame=single,
+  rulecolor=\color{dcCodeFrame},
+  numbers=none,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2
+}

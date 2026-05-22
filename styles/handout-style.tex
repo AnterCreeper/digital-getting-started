@@ -1,0 +1,61 @@
+% Shared article style for handouts.
+\usepackage[fontset=none]{ctex}
+\usepackage{fontspec}
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+\setCJKmainfont{Noto Serif CJK SC}[BoldFont={Noto Serif CJK SC Bold}]
+\setCJKsansfont{Noto Sans CJK SC}[BoldFont={Noto Sans CJK SC Bold}]
+\setCJKmonofont{Noto Sans Mono CJK SC}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\usepackage{hyperref}
+
+\definecolor{hcPrimary}{RGB}{20,72,110}
+\definecolor{hcTipBG}{RGB}{239,246,252}
+\definecolor{hcTipFrame}{RGB}{80,126,160}
+\definecolor{hcWarnBG}{RGB}{253,244,238}
+\definecolor{hcWarnFrame}{RGB}{183,84,52}
+\definecolor{hcCodeBG}{RGB}{247,248,250}
+\definecolor{hcCodeFrame}{RGB}{208,214,220}
+
+\hypersetup{colorlinks=true,linkcolor=hcPrimary,urlcolor=hcPrimary,citecolor=hcPrimary}
+\setlist{nosep}
+
+\newtcolorbox{tipbox}{
+  colback=hcTipBG,
+  colframe=hcTipFrame,
+  title=提示,
+  fonttitle=\bfseries,
+  boxrule=0.6pt,
+  breakable
+}
+
+\newtcolorbox{warnbox}{
+  colback=hcWarnBG,
+  colframe=hcWarnFrame,
+  title=警告,
+  fonttitle=\bfseries,
+  boxrule=0.6pt,
+  breakable
+}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{hcCodeBG},
+  frame=single,
+  rulecolor=\color{hcCodeFrame},
+  numbers=left,
+  numberstyle=\tiny,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2
+}

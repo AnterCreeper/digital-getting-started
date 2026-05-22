@@ -1,0 +1,16 @@
+# LaTeX intermediate files in lecture source directories
+chapters/**/*.aux
+chapters/**/*.log
+chapters/**/*.out
+chapters/**/*.nav
+chapters/**/*.snm
+chapters/**/*.toc
+chapters/**/*.vrb
+
+# Keep generated distributable PDFs in pdf/, not inside source lecture dirs
+chapters/**/slides.pdf
+chapters/**/handout.pdf
+
+# Remove vivado log files
+vivado.jou
+vivado.log
