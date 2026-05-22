@@ -18,11 +18,11 @@ all:
 	  fi; \
 	  if [ -f $$dir/slides.tex ]; then \
 	    (cd $$dir && $(TEX) $(TEXFLAGS) slides.tex >/dev/null && $(TEX) $(TEXFLAGS) slides.tex >/dev/null); \
-	    ln -sfn ../$$dir/slides.pdf pdf/$${out_prefix}_slides.pdf; \
+	    cp $$dir/slides.pdf pdf/$${out_prefix}_slides.pdf; \
 	  fi; \
 	  if [ -f $$dir/handout.tex ]; then \
 	    (cd $$dir && $(TEX) $(TEXFLAGS) handout.tex >/dev/null && $(TEX) $(TEXFLAGS) handout.tex >/dev/null); \
-	    ln -sfn ../$$dir/handout.pdf pdf/$${out_prefix}_handout.pdf; \
+	    cp $$dir/handout.pdf pdf/$${out_prefix}_handout.pdf; \
 	  fi; \
 	done
 	@echo "Build completed."
