@@ -1,0 +1,10 @@
+{
+  "chapter_title": "第三章：数字电路基础",
+  "title": "时序逻辑、状态机与时序约束基础",
+  "subtitle": "从寄存器边界、组合逻辑锥到 setup/hold、亚稳态与同步边界",
+  "summary": "把系统语义从组合逻辑推进到时序逻辑，建立 latch/flop/register、状态机、setup/hold、clock skew、metastability 与同步器的最小工程框架。",
+  "keywords": ["sequential logic", "register", "fsm", "setup", "hold", "metastability", "cdc", "synchronizer"],
+  "difficulty": "本科基础",
+  "duration": "90 min",
+  "updated": "2026-05-22"
+}

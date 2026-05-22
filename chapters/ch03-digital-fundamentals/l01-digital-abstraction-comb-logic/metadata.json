@@ -1,0 +1,10 @@
+{
+  "chapter_title": "第三章：数字电路基础",
+  "title": "数字抽象、CMOS 与组合逻辑基础",
+  "subtitle": "从 MOS 器件到逻辑门，再到组合逻辑与最小时序直觉",
+  "summary": "建立数字抽象的物理依据，串起 MOS、CMOS 反相器、基础逻辑门、门延迟与组合逻辑中的竞争/冒险，并把逻辑门放回可实现的物理对象视角中。",
+  "keywords": ["digital abstraction", "mos", "cmos", "inverter", "nand", "nor", "combinational logic", "hazard"],
+  "difficulty": "本科基础",
+  "duration": "90 min",
+  "updated": "2026-05-22"
+}

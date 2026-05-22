@@ -23,20 +23,29 @@
 \usetikzlibrary{shapes,arrows,positioning}
 
 % Color system
-\definecolor{dcPrimary}{RGB}{20,72,110}
-\definecolor{dcAccent}{RGB}{180,62,45}
-\definecolor{dcMuted}{RGB}{225,238,250}
+\definecolor{dcPrimary}{RGB}{21,101,117}
+\definecolor{dcSecondary}{RGB}{140,115,72}
+\definecolor{dcAccent}{RGB}{184,92,63}
+\definecolor{dcMuted}{RGB}{230,250,252}
+\definecolor{dcWarmBG}{RGB}{255,245,230}
 \definecolor{dcCodeBG}{RGB}{247,248,250}
-\definecolor{dcCodeFrame}{RGB}{208,214,220}
+\definecolor{dcCodeFrame}{RGB}{200,210,215}
 
 \setbeamercolor{structure}{fg=dcPrimary}
 \setbeamercolor{palette primary}{fg=dcPrimary,bg=dcMuted}
-\setbeamercolor{palette secondary}{fg=dcPrimary,bg=dcMuted!90}
+\setbeamercolor{palette secondary}{fg=dcSecondary,bg=dcMuted!90}
 \setbeamercolor{palette tertiary}{fg=dcPrimary,bg=dcMuted!80}
-\setbeamercolor{frametitle}{fg=dcPrimary,bg=dcMuted}
+\setbeamercolor{frametitle}{fg=white,bg=dcPrimary}
 \setbeamercolor{title}{fg=dcPrimary}
 \setbeamercolor{alerted text}{fg=dcAccent}
 \setbeamercolor{item}{fg=dcPrimary}
+\setbeamercolor{subitem}{fg=dcSecondary}
+\setbeamercolor{block title}{fg=white,bg=dcPrimary}
+\setbeamercolor{block body}{bg=dcMuted}
+\setbeamercolor{block title example}{fg=white,bg=dcSecondary}
+\setbeamercolor{block body example}{bg=dcWarmBG}
+\setbeamercolor{block title alerted}{fg=white,bg=dcAccent}
+\setbeamercolor{block body alerted}{bg=dcWarmBG}
 \setbeamercolor{footline}{fg=dcPrimary}
 
 \lstset{
