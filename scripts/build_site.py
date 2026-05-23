@@ -125,11 +125,12 @@ def copy_assets_and_build_zips(lectures: list[dict]) -> None:
                 path = lecture["source_dir"] / filename
                 if path.exists():
                     zf.write(path, arcname=filename)
-            figures = lecture["source_dir"] / "figures"
-            if figures.exists():
-                for fig in figures.rglob("*"):
-                    if fig.is_file():
-                        zf.write(fig, arcname=f"figures/{fig.relative_to(figures)}")
+            for dirname in ("figures", "examples"):
+                src_dir = lecture["source_dir"] / dirname
+                if src_dir.exists():
+                    for child in src_dir.rglob("*"):
+                        if child.is_file():
+                            zf.write(child, arcname=f"{dirname}/{child.relative_to(src_dir)}")
         lecture["source_zip_url"] = f"assets/lectures/{lecture['slug']}/{zip_name}"
 
 

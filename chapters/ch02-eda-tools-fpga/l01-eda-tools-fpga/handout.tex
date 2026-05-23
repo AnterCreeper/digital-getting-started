@@ -2,7 +2,7 @@
 \input{../../../styles/handout-style.tex}
 
 \title{第二章：EDA工具与FPGA实践基础}
-\author{数字电路入门}
+\author{Digital Circuit Getting Started}
 \date{\today}
 
 \graphicspath{{figures/}}
@@ -36,13 +36,11 @@
 \section{本章导读}
 % ============================================================
 
-在第一章里，我们站在远处看了一座城的轮廓——芯片是什么，系统怎么组织，产业链如何分工。上一章最后我们提到：芯片制造本身变成可重复、可组织、可协作的工业流程后，设计环节也必然发展出对应的工具链与工程方法。从本章开始，你要走进这座城，第一次真正坐在一台Linux机器前，安装工具、运行脚本、观察输出，并借助一个最小的实验获得可验证的正反馈。
+在第一章里，我们站在远处看了一座城的轮廓——芯片是什么，系统怎么组织，产业链如何分工。上一章最后我们提到：芯片制造本身变成可重复、可组织、可协作的工业流程后，设计环节也必然发展出对应的工具链与工程方法。从本章开始，让我们走进这座城，第一次真正坐在一台Linux机器前，安装工具、运行脚本、观察输出，并借助一个最小的实验获得可验证的正反馈。
 
-很多初学者会问：为什么不先学电路原理，再碰工具？答案很简单——\textbf{即时反馈是认知杠杆}。几行RTL代码写下去，几秒钟后在波形窗口里看到信号随着代码变化，这种直接关联比硬背两章布尔代数再碰工具有效得多。本章的目标不是让你成为工具专家，而是让命令行工作方式和EDA工具链闭环变成你的``身体经验''。
+为什么不先学电路原理，再碰工具？\textbf{即时反馈是认知杠杆}——几行RTL代码写下去，几秒钟后在波形窗口里看到信号随着代码变化，这种直接关联比先硬背两章布尔代数再碰工具有效得多。本章的目标不是让你成为工具专家，而是让命令行工作方式和EDA工具链闭环变成你的``身体经验''。
 
-这一章也不是Linux系统管理入门课，不是Verilog语法教材（那是第四章的事），更不是深入讲解EDA原理的专题。它的教学契约很明确：\textbf{先会跑通，再会解释；先会观察波形，再会设计电路；先建立工具链直觉，再追究每个参数的含义}。
-
-全章只用一个实验——呼吸灯PWM计数器（lab1-breathing-led）——从仿真一直走到综合网表。
+本章只取立刻要用到的Linux命令和Verilog片段——系统的Verilog语法是第四章的事，EDA原理的完整深度留给后续专题。本章配备了一个实验——呼吸灯PWM计数器（lab1-breathing-led），力图跑通最小闭环：仿真→看波形→综合→查网表。先会跑通，再会解释；先观察波形，再追究每个参数的含义。
 
 % ============================================================
 \section{学习目标}
@@ -63,22 +61,38 @@
 \end{itemize}
 
 % ============================================================
-\section{为什么先跑工具？}
+\section{实验环境准备}
 % ============================================================
 
-\subsection{从「理论先行」到「工具先行」}
+本章使用的 Icarus Verilog、GTKWave 和 Yosys 在主流平台上均可安装——macOS 下 \texttt{brew install iverilog gtkwave yosys} 即可，Windows 下也有对应的二进制发行版。也就是说，跑通本章仿真和综合闭环，不一定需要 Linux。
 
-传统工科教育的常见模式是：先学两年数学物理，再学两年专业基础，最后才接触实际工具。这种模式对电路设计来说有一个明显的问题——你背了很多公式和定理，但从未验证过它们在一个真实系统里是否成立。你的知识停留在``我理解了''，而不是``我确认了''。
+但后续章节会逐步引入 FPGA 实现（Vivado）以及更复杂的工具链。Vivado 只有 Windows 和 Linux 版本，没有 macOS 版本；更后期的 ASIC 流程中，商业 EDA 工具的默认平台是 Linux。因此，在 Linux 上建立工作环境是一项\textbf{学费花在前面}的投资——先搭好，后边每一章都不需要再折腾。
 
-数字电路设计的一个特殊之处在于，\textbf{工具本身就是理解的一部分}。波形不是电路行为的``插图''，而是电路行为的直接呈现；综合不是RTL的``翻译练习''，而是RTL被硬件实现时的真实映射。如果你始终隔着理论和工具之间的距离去学习，你会产生一种常见的幻觉：以为自己懂了，但一动手就发现处处不对。
+\subsection{三种安装路径}
 
-本章把这个顺序颠倒过来：\textbf{先让你动手跑通一个最小闭环，然后再在闭环的基础上逐层追加理论}。你不需要先理解PWM计数器的内部实现才能跑仿真——恰恰相反，看到波形里的三角波和PWM输出时，你会自然地想知道``这个三角波是怎么生成的''``占空比怎么控制亮度''，这些问题会引导你后续去深入学习。
+\textbf{WSL（Windows Subsystem for Linux）}
 
-\subsection{最小闭环}
+WSL 在现有 Windows 系统里运行一个轻量级 Linux 子环境，不需要虚拟机或双系统。它和 Windows 共享文件系统，终端和图形界面之间的切换也比虚拟机更轻。对 Windows 用户来说，这是代价最小的入门路径。
 
-一个完整的数字设计闭环包括：写RTL$\rightarrow$仿真$\rightarrow$看波形$\rightarrow$综合$\rightarrow$查网表$\rightarrow$上板验证。本章的主线重点放在前五个环节；上板部分只作为补充入口出现，帮助你把这条闭环和真实硬件联系起来。
+\textbf{VMware 或 VirtualBox}
 
-这个闭环的价值不在于它短，而在于它\textbf{可复现}。一旦你跑通了一次，后续每一章的概念都可以放进同一个闭环里验证。第三章的组合逻辑可以写RTL然后看波形；第四章的Verilog语法可以边学边编译；第七章的系统级设计可以复用同样的目录结构和脚本。这个闭环是你后面所有学习的\textbf{工作台}。
+在 Windows 或 macOS 上安装 VMware Workstation、VMware Fusion 或 VirtualBox，然后在虚拟机里安装 Linux。这个方案提供完整的 Linux 桌面体验，隔离性好，也更接近一台独立 Linux 机器的使用感。资源开销比 WSL 大，但如果后续需要 GUI 工具（如 Vivado 图形界面），虚拟机的兼容性更可预测。
+
+\textbf{物理机或云主机}
+
+直接在一台机器上安装 Linux 作为主系统，或者与现有系统组成双系统。也可以租用云主机（如 AWS EC2、阿里云 ECS 等），通过 SSH 或 VNC 远程桌面连接使用。云主机的优势是不占用本地硬件资源，且可以随时按需调整配置，缺点是需要网络连接和一定的运维知识。
+
+\subsection{发行版选择：Ubuntu 或 Debian}
+
+本书所有实验在 Ubuntu 和 Debian 上验证通过。
+
+Ubuntu 是目前桌面 Linux 中用户量最大的发行版，社区资源丰富，遇到问题时搜到的可用答案最多。默认安装包含完整的桌面环境和常用软件包，开箱门槛低。
+
+Debian 更偏向稳定和克制。它的软件包版本比 Ubuntu 保守，但对于教学实验来说完全足够。Debian 的默认安装比 Ubuntu 更精简，系统占用也更低。
+
+两者择一即可。本章及后续的终端命令和包管理操作（\texttt{apt install}）在两种发行版上完全通用。
+
+安装完成后，按 \texttt{Ctrl+Alt+T} 打开终端——一个黑底白字的窗口，这是你后面所有工作的入口。
 
 % ============================================================
 \section{命令行：工程师的工作台}
@@ -98,7 +112,7 @@
 
 \subsection{文件系统：一棵倒着的树}
 
-很多初学者在命令行里踩的第一个坑，不是命令拼错，而是\textbf{路径理解错了}。如果你对文件系统完全没有概念，这一节建议慢读。
+在命令行里最容易引起混淆的，往往不是命令拼错，而是\textbf{路径理解错了}。这一节值得慢读。
 
 \textbf{文件系统是一棵倒着的树}
 
@@ -139,7 +153,7 @@
   \item \textbf{绝对路径}：\texttt{/home/student/project/lab1/sim/run.sh} ——从根目录开始解析，无论你在哪执行，都指向同一个文件
 \end{itemize}
 
-初学阶段，如果你不确定自己当前在哪个目录，最稳妥的办法是使用绝对路径，或者先 \texttt{cd} 到正确目录再执行相对路径。
+如果不确定当前在哪个目录，最稳妥的办法是使用绝对路径，或者先 \texttt{cd} 到正确目录再执行相对路径。
 
 \begin{warnbox}
 终端窗口本身就会显示你当前所在的目录。看下面这个典型的终端界面——注意行首的 \texttt{user@hostname:\textasciitilde/projects/lab1\$}，其中 \texttt{\textasciitilde/projects/lab1} 就是当前路径：
@@ -178,7 +192,7 @@ user@ubuntu:~/projects/lab1$
 \end{tabular}
 \end{center}
 
-\textbf{两个高频陷阱}
+\textbf{三个高频陷阱}
 
 \begin{warnbox}
 \textbf{Ctrl+C} 在终端里是\textbf{终止当前进程}，不是``复制''。终端里的复制粘贴通常是 \texttt{Ctrl+Shift+C} / \texttt{Ctrl+Shift+V}。这个坑几乎每个人都会踩一次——踩过之后记住就好。
@@ -188,18 +202,31 @@ user@ubuntu:~/projects/lab1$
 如果命令报错"command not found"，先运行 \texttt{which \textless{}command\textgreater{}}。如果返回空，说明工具没装或不在 \texttt{PATH} 里。安装前务必先执行 \texttt{sudo apt update}，否则可能装到旧版本或找不到包。
 \end{warnbox}
 
+\begin{warnbox}
+\textbf{sudo 的权限边界}
+
+\texttt{sudo} 会临时授予你 root 权限——可以修改系统文件、删除关键目录、覆盖分区。第一次运行 \texttt{sudo} 时，系统会显示一段经典的提示：
+
+\begin{quote}
+我们信任您已经从系统管理员那里了解了日常注意事项。
+总结起来无外乎这三点：
+
+\#1) 尊重别人的隐私。\\
+\#2) 输入前要先考虑（后果和风险）。\\
+\#3) 权力越大，责任越大。
+\end{quote}
+
+这段提示不是客套——\texttt{sudo} 下一条拼错的路径或一个多余的空格，就可能覆盖系统配置甚至擦除整个磁盘。按下回车前，确认命令中每个参数都指向你确信的目标。
+\end{warnbox}
+
 \textbf{工程目录结构}
 
-第一次进入lab1-breathing-led目录，会看到这样一个结构：
+先试一下：进入实验目录，看看里面有什么。
 
 \begin{lstlisting}[style=shell]
-lab1-breathing-led/
-├── rtl/          # RTL 源文件——你设计的电路
-├── tb/           # 测试平台——验证电路的代码
-├── sim/          # 仿真脚本和产物
-├── synth/        # 综合脚本和网表
-├── fpga/         # FPGA 板级约束
-└── README.md     # 实验说明
+user@ubuntu:~$ cd examples/lab1-breathing-led/
+user@ubuntu:~/examples/lab1-breathing-led$ ls
+Makefile  README.md  fpga/  rtl/  sim/  synth/  tb/
 \end{lstlisting}
 
 这个结构不是随意安排的。\texttt{rtl/} 和 \texttt{tb/} 里的文件是\textbf{源文件}——你写的、需要版本控制的；\texttt{sim/} 和 \texttt{synth/} 里的产物是\textbf{生成文件}——工具输出的、不需要版本控制的。两者分开，避免你在修改设计时不小心编辑了生成文件。
@@ -233,6 +260,12 @@ lab1-breathing-led/
   \item \texttt{tmux} : 终端复用，管理远程长任务（后续章节会用到）
 \end{itemize}
 
+\begin{warnbox}
+\textbf{rm 没有回收站}
+
+\texttt{rm} 删除的文件不进回收站，不可恢复。\texttt{rm -r} 会递归删除一个目录及其所有内容。在终端里删除之前，先看一眼提示符确认当前所在目录，再确认目标路径确实是你想删的东西。一个防御习惯是：先 \texttt{ls <路径>} 看一眼里面有什么，再决定是否 \texttt{rm}。
+\end{warnbox}
+
 \begin{tipbox}
 \textbf{延伸阅读：}如果你想更系统地学习Linux，推荐阅读《Getting Started Handout》中的\href{https://github.com/ZangXuanyi/getting-started-handout/blob/main/book3/01-shell-101.tex}{终端101}和\href{https://github.com/ZangXuanyi/getting-started-handout/blob/main/book3/02-linux.tex}{开始使用Linux}两章。
 \end{tipbox}
@@ -246,12 +279,12 @@ lab1-breathing-led/
 仿真不是``点一个按钮然后看结果''那么简单——它是一条由多个工具组成的流水线。理解这条流水线的意义在于：某一步出错时，你能判断问题出在编译阶段、运行阶段还是显示阶段，而不是对着黑屏干瞪眼。
 
 \begin{enumerate}
-  \item \textbf{Icarus Verilog（\texttt{iverilog}）} : 编译器。读入 \texttt{.v} 文件，输出可执行文件。相当于把Verilog代码翻译成仿真器能运行的二进制。
-  \item \textbf{VVP} : 运行时引擎。执行编译产物，按testbench里的指令推进仿真时间，生成波形文件。
-  \item \textbf{GTKWave} : 波形查看器。打开波形文件，把时间轴和信号值可视化。
+  \item \textbf{Icarus Verilog（\texttt{iverilog}）} : 编译器。读入 \texttt{.v} 文件，解析语法、展开模块层次，输出 \texttt{.vvp} 中间文件——一种类汇编的文本格式，由 vvp 仿真引擎读取和执行。
+  \item \textbf{VVP} : 仿真运行时引擎。读入 \texttt{.vvp} 文件，构建仿真模型（事件队列、线程、信号网络），按 testbench 的激励推进仿真时间，生成 \texttt{.vcd} 波形文件。
+  \item \textbf{GTKWave} : 波形查看器。打开 \texttt{.vcd} 波形文件，把时间轴和信号值可视化。
 \end{enumerate}
 
-数据流：\texttt{.v 文件} $\xrightarrow{\text{iverilog}}$ \texttt{可执行文件} $\xrightarrow{\text{vvp}}$ \texttt{.vcd 波形} $\xrightarrow{\text{GTKWave}}$ \texttt{屏幕}
+数据流：\texttt{.v 文件} $\xrightarrow{\text{iverilog}}$ \texttt{.vvp 中间文件} $\xrightarrow{\text{vvp}}$ \texttt{.vcd 波形} $\xrightarrow{\text{GTKWave}}$ \texttt{屏幕}
 
 \subsection{跑通第一条命令链}
 
@@ -263,7 +296,7 @@ $ gtkwave sim/tb.vcd
 
 第一步编译时，\texttt{-o sim/tb.vvp} 指定输出文件名为 \texttt{sim/tb.vvp}（而不是默认的 \texttt{a.out}）。第二步运行时，\texttt{vvp} 执行这个文件，testbench里的 \texttt{\$dumpfile("tb.vcd")} 和 \texttt{\$dumpvars(...)} 语句告诉仿真器把信号变化记录到 \texttt{tb.vcd}。第三步，GTKWave打开这个波形文件。
 
-这里不需要你理解 \texttt{\$dumpfile} 和 \texttt{\$dumpvars} 的语法细节——第四章会系统讲 Verilog。现在只需要知道：testbench 里的这两行代码负责让仿真器``把波形存进文件''，这样 GTKWave 才能打开它。
+本节不展开 \texttt{\$dumpfile} 和 \texttt{\$dumpvars} 的语法细节——第四章会系统讲 Verilog。先记住一件具体的事：testbench 里这两行代码负责让仿真器把波形存进文件，GTKWave 才能打开。
 
 % ============================================================
 \subsection{波形里能看到什么}
@@ -278,7 +311,7 @@ $ gtkwave sim/tb.vcd
   \item \textbf{前后关系}：某个输出变化之前，是否有输入、计数器、模式位或时钟边沿先发生变化。
 \end{itemize}
 
-因此，看波形的重点不是“这张图好不好看”，而是能不能用它复述电路行为：复位什么时候结束，计数器什么时候开始数，输出为什么在这个时刻翻转。如果这些问题答不上来，即使仿真命令没有报错，验证也还没有完成。
+因此，看波形的重点不是"这张图好不好看"，而是能不能用它复述电路行为：复位什么时候结束，计数器什么时候开始数，输出为什么在这个时刻翻转。如果这些问题答不上来，即使仿真命令没有报错，验证也还没有完成。
 
 \subsection{第一次打开波形，先看什么}
 
@@ -288,10 +321,10 @@ $ gtkwave sim/tb.vcd
   \item \textbf{先看时间尺度}：按 \texttt{f}（Zoom to Fit）看完整仿真范围，再放大到几个时钟周期。先知道自己是在看全局趋势，还是在看局部细节。
   \item \textbf{再看 \texttt{clk} 和 \texttt{rst\_n}}：确认时钟确实在翻转，复位确实从有效状态释放到无效状态。时钟不动、复位不释放，后面的信号解释都不可靠。
   \item \textbf{然后看驱动信号}：例如本实验里的 \texttt{duty}、\texttt{pwm\_cnt} 和 \texttt{mode}。它们是解释输出变化的原因。
-  \item \textbf{最后看输出信号}：例如 \texttt{pwm\_out}。不要只问“它有没有变”，还要问“它是不是按前面那些信号的变化而变”。
+  \item \textbf{最后看输出信号}：例如 \texttt{pwm\_out}。不要只问"它有没有变"，还要问"它是不是按前面那些信号的变化而变"。
 \end{enumerate}
 
-这个顺序的好处是，它把波形阅读从“盯着线看”变成“沿着因果链检查”：先确认时间和复位，再确认内部状态，最后解释输出。后面调试更复杂的电路时，这个顺序仍然适用。
+这个顺序的好处是，它把波形阅读从"盯着线看"变成"沿着因果链检查"：先确认时间和复位，再确认内部状态，最后解释输出。后面调试更复杂的电路时，这个顺序仍然适用。
 
 \subsection{四种常见取值}
 
@@ -310,14 +343,14 @@ $ gtkwave sim/tb.vcd
 \end{tabular}
 \end{center}
 
-这里最容易误解的是 \texttt{X}。\texttt{X} 的意思不是“电路里真的存在第三种稳定逻辑电平”，而是：\textbf{在当前仿真模型和当前时刻下，仿真器无法确定这个信号究竟是 0 还是 1。}
+这里最容易误解的是 \texttt{X}。\texttt{X} 的意思不是"电路里真的存在第三种稳定逻辑电平"，而是：\textbf{在当前仿真模型和当前时刻下，仿真器无法确定这个信号究竟是 0 还是 1。}
 
-在初学阶段，你可以先把 \texttt{X} 理解成“仿真器现在无法确定这是 0 还是 1”。常见原因包括：
+可以把 \texttt{X} 理解成"仿真器现在无法确定这是 0 还是 1"。常见原因包括：
 
 \begin{itemize}
   \item \textbf{仿真刚开始，寄存器还没初始化}。就像你刚打开一台电脑，内存里的值是随机的。仿真器也一样，刚启动时所有存储单元默认都是 X，直到完成复位或被赋予确定值。
-  \item \textbf{代码里人为写了 X}。有时设计者故意用 X 表示“这个值我不关心”或“这个状态不应该出现”。比如在 testbench 里初始化某个信号为 X，看它后面会不会被正确赋值。
-  \item \textbf{两条线同时控制一个信号，给的值还不一样}。比如一条线说“这是 0”，另一条线说“这是 1”，仿真器无法裁决，只能显示 X。这通常是设计错误。
+  \item \textbf{代码里人为写了 X}。有时设计者故意用 X 表示"这个值我不关心"或"这个状态不应该出现"。比如在 testbench 里初始化某个信号为 X，看它后面会不会被正确赋值。
+  \item \textbf{两条线同时控制一个信号，给的值还不一样}。比如一条线说"这是 0"，另一条线说"这是 1"，仿真器无法裁决，只能显示 X。这通常是设计错误。
 \end{itemize}
 
 因此，一个更稳妥的判断是：\textbf{在复位尚未完成、仿真刚开始的阶段，出现 \texttt{X} 并不奇怪；但在设计进入你期望的正常工作阶段后，如果关键控制信号上仍然持续出现 \texttt{X}，通常就值得警惕。} 先不要把每一个 \texttt{X} 都当成灾难，但也绝不要把它当空气。
@@ -326,17 +359,17 @@ $ gtkwave sim/tb.vcd
 
 \subsection{组合逻辑 vs. 时序逻辑在波形上的区别}
 
-\textbf{组合逻辑}关心的是“当前输入决定当前输出”。在 RTL 仿真里，你经常会看到输入一变，输出也几乎立刻跟着变。这并不意味着真实硬件完全没有延迟，而是因为本章看到的是较理想的功能级仿真，很多物理延迟细节还没有被展开。
+\textbf{组合逻辑}关心的是"当前输入决定当前输出"。在 RTL 仿真里，你经常会看到输入一变，输出也几乎立刻跟着变。这并不意味着真实硬件完全没有延迟，而是因为本章看到的是较理想的功能级仿真，很多物理延迟细节还没有被展开。
 
-\textbf{时序逻辑}（寄存器）则不同。它不是“输入一变输出就跟着变”，而是要等到时钟边沿才更新状态。对初学者来说，最重要的观察不是去凭肉眼诊断复杂时序问题，而是先建立一个稳定直觉：
+\textbf{时序逻辑}（寄存器）则不同。它不是"输入一变输出就跟着变"，而是要等到时钟边沿才更新状态。第一步先建立一个稳定直觉：
 
 \begin{itemize}
-  \item 时钟边沿像“拍照时刻”
+  \item 时钟边沿像"拍照时刻"
   \item 寄存器在这些离散时刻更新自己的状态
   \item 两个边沿之间，寄存器保存的是上一次采样得到的结果
 \end{itemize}
 
-所以你在波形里最该看的，是“某个状态信号是不是总在时钟边沿附近发生更新”，而不是把所有边沿附近的细小变化都直接解释成建立时间或保持时间问题。那些更正式的时序概念，会在后面章节系统展开。
+所以你在波形里最该看的，是"某个状态信号是不是总在时钟边沿附近发生更新"，而不是把所有边沿附近的细小变化都直接解释成建立时间或保持时间问题。那些更正式的时序概念，会在后面章节系统展开。
 
 \subsection{呼吸灯的波形长什么样}
 
@@ -347,7 +380,7 @@ $ gtkwave sim/tb.vcd
   \item \texttt{pwm\_out} : 最终输出到 LED 的 PWM 信号
 \end{itemize}
 
-这里有一个很重要的上下文：\textbf{testbench 里为了让仿真更快，把参数缩小了。} 也就是说，你在波形里看到的不是板上真实运行时那组很大的计数范围，而是一个“缩微版”的呼吸灯。
+这里有一个很重要的上下文：\textbf{testbench 里为了让仿真更快，把参数缩小了。} 也就是说，你在波形里看到的不是板上真实运行时那组很大的计数范围，而是一个"缩微版"的呼吸灯。
 
 因此，在本章的仿真波形里，你更应该抓住的是\textbf{形状关系}，而不是死记具体数字：
 
@@ -444,11 +477,11 @@ RTL里你写了一个15位的\texttt{tri\_cnt}寄存器，网表里它变成了1
 同一个 \texttt{breathing\_led.v} 文件，Icarus 和 Yosys 都会去读，但你不必在本章就把它们之间全部语义差异吃透。对当前阶段来说，先记住一件更重要的事：\textbf{它们在检查同一个设计的不同侧面。}
 
 \begin{itemize}
-  \item \textbf{Icarus（仿真器）}：把 testbench 提供的激励按时间顺序跑一遍，让你观察“这个设计在这些输入下表现如何”。
-  \item \textbf{Yosys（综合器）}：把 RTL 映射成寄存器和组合逻辑结构，让你观察“这个设计大致会被实现成什么样子”。
+  \item \textbf{Icarus（仿真器）}：把 testbench 提供的激励按时间顺序跑一遍，让你观察"这个设计在这些输入下表现如何"。
+  \item \textbf{Yosys（综合器）}：把 RTL 映射成寄存器和组合逻辑结构，让你观察"这个设计大致会被实现成什么样子"。
 \end{itemize}
 
-所以这里最该建立的判断不是“我已经理解了全部语义细节”，而是：\textbf{仿真回答“它在给定激励下做了什么”，综合回答“它会被组织成什么结构”。} 第二章只要求你先对这两个角度保持警觉，后面章节再系统展开什么样的 RTL 写法会影响综合结果。
+所以这里最该建立的判断不是"我已经理解了全部语义细节"，而是：\textbf{仿真回答"它在给定激励下做了什么"，综合回答"它会被组织成什么结构"。} 后面章节会系统展开什么样的 RTL 写法会影响综合结果。
 
 \subsection{一个足够说明问题的小例子}
 
@@ -460,11 +493,11 @@ always @(*)
   if (condition) out = 1;    // 没有 else！
 \end{lstlisting}
 
-你现在不需要在第二章就彻底吃透“为什么这种写法会推断出 latch”的全部语言规则；那是第 4 章要系统讲的内容。本节只需要你先建立一个风险意识：\textbf{RTL 写法如果没有把行为边界交代清楚，综合器就可能生成你本来没打算要的结构。}
+latch 推断的完整规则将在第 4 章系统展开。这里先建立一个风险意识：\textbf{RTL 写法如果没有把行为边界交代清楚，综合器就可能生成你本来没打算要的结构。}
 
-对这段代码来说，最朴素的理解已经够用了：\texttt{condition} 为假时，\texttt{out} 该取什么值并没有被清楚说明。仿真里你可能只是看到 \texttt{out} 保持旧值；综合时，工具为了实现这种“保持”的效果，可能会推断出一个锁存器。问题的重点不是你现在就要掌握 latch 的全部细节，而是要记住：\textbf{仿真看起来“能跑”，并不代表结构上就一定符合你的原意。}
+对这段代码来说，最朴素的理解已经够用了：\texttt{condition} 为假时，\texttt{out} 该取什么值并没有被清楚说明。仿真里你可能只是看到 \texttt{out} 保持旧值；综合时，工具为了实现这种"保持"的效果，可能会推断出一个锁存器。重点不是立刻掌握 latch 的全部细节，而是记住：\textbf{仿真看起来"能跑"，并不代表结构上就一定符合你的原意。}
 
-这就是为什么第二章要让你同时看波形和综合网表/综合日志，而不是只盯着其中一边。
+仿真和综合，单独看都只能给出一个侧面。把它们放在一起检查，才能捕捉到行为和结构之间的不一致。
 
 \begin{warnbox}
 \textbf{没有任何验证手段能证明一个设计``绝对正确''——正确永远是条件性的。}
@@ -476,7 +509,7 @@ always @(*)
   \item 设计满足时序、功耗和面积约束
 \end{itemize}
 
-所以仿真通过只是起点，不是终点。本章让你同时看波形和网表，是为了建立最基本的警觉：\textbf{行为看起来对，不等于结构一定对；结构看起来对，也不等于物理实现一定对。} 验证是一个逐层收敛的过程，每一层只解决它那一层的问题。
+所以仿真通过只是起点，不是终点。本章同时覆盖波形和网表，正是为了训练一个基本直觉：\textbf{行为看起来对，不等于结构一定对；结构看起来对，也不等于物理实现一定对。} 验证是一个逐层收敛的过程，每一层只解决它那一层的问题。
 \end{warnbox}
 
 \subsection{验证纪律}
@@ -545,7 +578,7 @@ CLB是FPGA中最核心的计算单元。一个CLB内部通常包含：
 SM（开关矩阵）和IOB（输入输出块）的细节在图的后两部分展示。SM里布满了可编程开关，这些开关的通断状态由配置比特流决定。IOB则负责信号的电平转换、缓冲和引脚映射——毕竟芯片内部的信号电压和外部电路的电压标准可能不同。
 
 \begin{tipbox}
-初学者最容易产生的误解是：以为FPGA里``有一个LUT、一个FF、一根线''，然后这三样东西通过软件组合起来。实际上，FPGA里预先造好了\textbf{成千上万个}LUT、FF、SM和IOB，它们以阵列形式排布在硅片上。你下载的配置文件只决定了：每个LUT的真值表是什么、每个触发器的初始状态是什么、每个开关矩阵的哪些开关闭合。FPGA不是``从无到有''地构造电路，而是``从已有的资源中''选择并连接出你想要的电路。
+一个常见的误解：以为FPGA里``有一个LUT、一个FF、一根线''，然后这三样东西通过软件组合起来。实际上，FPGA里预先造好了\textbf{成千上万个}LUT、FF、SM和IOB，它们以阵列形式排布在硅片上。你下载的配置文件只决定了：每个LUT的真值表是什么、每个触发器的初始状态是什么、每个开关矩阵的哪些开关闭合。FPGA不是``从无到有''地构造电路，而是``从已有的资源中''选择并连接出你想要的电路。
 \end{tipbox}
 
 \subsection{FPGA vs. ASIC}
@@ -618,11 +651,11 @@ Basys3用的是\textbf{纯FPGA}——只有可编程逻辑，没有硬核处理�
 
 \subsection{开源、商业与FPGA厂商：三条线}
 
-数字设计工具不是一条从“低级”到“高级”的直线，而是三条服务于不同约束的工具线。区分它们，是为了知道当前任务需要什么，而不是给工具排身份高低。
+数字设计工具不是一条从"低级"到"高级"的直线，而是三条服务于不同约束的工具线。区分它们，是为了知道当前任务需要什么，而不是给工具排身份高低。
 
-\textbf{开源工具线}适合教学、原型验证和可重复实验。它的优势是低门槛、容易安装、命令透明，适合用来建立“RTL如何被仿真、综合和查看”的基本直觉。本章使用的Icarus Verilog、GTKWave和Yosys就属于这一类。
+\textbf{开源工具线}适合教学、原型验证和可重复实验。它的优势是低门槛、容易安装、命令透明，适合用来建立"RTL如何被仿真、综合和查看"的基本直觉。本章使用的Icarus Verilog、GTKWave和Yosys就属于这一类。
 
-\textbf{商业ASIC工具线}服务于大规模芯片设计和流片签核。它处理的问题包括更大的设计规模、更复杂的时序约束、功耗分析、物理验证、等价检查和工艺库集成。这类工具不是“更漂亮的开源工具”，而是面向工业责任边界的完整系统。
+\textbf{商业ASIC工具线}服务于大规模芯片设计和流片签核。它处理的问题包括更大的设计规模、更复杂的时序约束、功耗分析、物理验证、等价检查和工艺库集成。这类工具不是"更漂亮的开源工具"，而是面向工业责任边界的完整系统。
 
 \textbf{FPGA厂商工具线}服务于具体器件。Vivado、Quartus这类工具不仅做综合，还要知道目标芯片里有哪些LUT、触发器、BRAM、DSP、时钟资源和引脚位置。它们的核心任务是把你的RTL落到某一块真实FPGA上，并生成可下载的bitstream。
 
@@ -640,7 +673,7 @@ Lint/CDC & Verilator（部分） & SpyGlass、Conformal & --- \\
 \end{tabular}
 \end{center}
 
-所以，本章选择开源工具不是因为它“代表全部工业流程”，而是因为它足够小、足够透明，适合看清第一条闭环：写RTL、跑仿真、看波形、做综合。后面真正上FPGA时，我们会进入厂商工具；如果未来走向ASIC流片，还会进入商业签核流程。三条线不是互相鄙视的阵营，而是不同阶段、不同风险、不同成本下的工程选择。
+所以，本章选择开源工具不是因为它"代表全部工业流程"，而是因为它足够小、足够透明，适合看清第一条闭环：写RTL、跑仿真、看波形、做综合。后面真正上FPGA时，我们会进入厂商工具；如果未来走向ASIC流片，还会进入商业签核流程。三条线不是互相鄙视的阵营，而是不同阶段、不同风险、不同成本下的工程选择。
 
 \subsection{商业工具链长什么样}
 
@@ -663,10 +696,6 @@ Lint/CDC & Verilator（部分） & SpyGlass、Conformal & --- \\
 \end{enumerate}
 
 每个工具都需要单独license和集成。你本章学的开源工具链（Icarus + GTKWave + Yosys）只覆盖了\textbf{仿真和综合}两层——但这正是学习和原型验证所需的最小集合。
-
-\begin{warnbox}
-商业流程不是``更好的开源''。它是在不同约束（更大规模、更先进工艺、更高可靠性要求）下的不同解决方案。先学会用开源工具建立直觉，再根据需要迁移到商业工具——这个顺序更合理。
-\end{warnbox}
 
 % ============================================================
 \section{补充：Makefile与FPGA上板}
@@ -691,7 +720,7 @@ $ make clean        # 清理生成文件
 这不是新的工具链，而是对前面命令的封装。你可以先用 \texttt{make sim} 快速确认环境可用；如果想看清细节，再打开 \texttt{sim/run.sh}、\texttt{synth/run.sh} 或 \texttt{fpga/run.tcl}，逐行对照前面讲过的工具角色。
 
 \begin{tipbox}
-Makefile适合保存“已经确定下来的流程”。调试命令时可以手动执行；流程稳定后，再把它收进Makefile，减少重复劳动和手误。
+Makefile适合保存"已经确定下来的流程"。调试命令时可以手动执行；流程稳定后，再把它收进Makefile，减少重复劳动和手误。
 \end{tipbox}
 
 \subsection{FPGA上板验证}
@@ -756,7 +785,7 @@ user@ubuntu:~/examples/lab1-breathing-led$ make clean
 \midrule
 RTL & Register Transfer Level，寄存器传输级。用寄存器和组合逻辑描述硬件行为。 \\
 Testbench & 仿真用的验证代码，为DUT提供激励并检查输出。 \\
-Icarus Verilog & 开源Verilog仿真器。 \\
+Icarus Verilog & 开源Verilog编译器，输出vvp中间文件供vvp仿真引擎执行。 \\
 GTKWave & 开源波形查看器，读取VCD等波形格式。 \\
 Yosys & 开源RTL综合工具，将RTL转换为门级网表。 \\
 VCD & Value Change Dump，波形文件格式。 \\
@@ -775,26 +804,14 @@ Duty Cycle & 占空比，PWM波形中高电平时间占总周期的比例。 \\
 % ============================================================
 
 \begin{enumerate}
-  \item \textbf{工具安装证明}\\
-  安装Icarus Verilog、GTKWave和Yosys，在本地电脑上完成复现本章样例所需的最小环境配置。
-
-  \item \textbf{跑通完整闭环}\\
-  进入 \texttt{examples/lab1-breathing-led/}，执行 \texttt{bash sim/run.sh} 和 \texttt{bash synth/run.sh}。通过GTKWave查看\texttt{duty}、\texttt{pwm\_cnt}、\texttt{pwm\_out}的波形，解释三角波与PWM输出的关系。
-
-  \item \textbf{检查网表}\\
-  打开 \texttt{synth/breathing\_led\_synth.v}，定位\texttt{tri\_cnt}对应的触发器。单元名是什么？（提示：搜索 \texttt{\$\_DFF}。）
-
-  \item \textbf{参数探索}\\
-  把 \texttt{TRI\_WIDTH} 从15改为13，重新仿真。占空比变化周期发生了什么？为什么？
-
-  \item \textbf{Why/What/How分析Yosys}\\
-  从``为什么需要综合器''（Why）、``综合器做什么''（What）、``怎么用Yosys''（How）三个维度分析Yosys，并对比仿真器和综合器的区别。
-
-  \item \textbf{反转比较器}\\
-  修改比较逻辑让LED在计数器值小时亮。仿真确认波形变化。这在物理板上意味着什么？
-
-  \item \textbf{开源工具调研（选做）}\\
-  搜索一个本章未涉及的开源工具（OpenROAD、F4PGA、Verilator、Cocotb等），说明它做什么、对应本章哪个工具、强在哪/弱在哪。
+  \item 安装 Icarus Verilog、GTKWave 和 Yosys，在本地电脑上完成复现本章样例所需的最小环境配置。
+  \item 进入 \texttt{examples/lab1-breathing-led/}，执行 \texttt{bash sim/run.sh} 和 \texttt{bash synth/run.sh}。通过 GTKWave 查看 \texttt{duty}、\texttt{pwm\_cnt}、\texttt{pwm\_out} 的波形，解释三角波与 PWM 输出的关系。
+  \item 打开 \texttt{synth/breathing\_led\_synth.v}，定位 \texttt{tri\_cnt} 对应的触发器。单元名是什么？（提示：搜索 \texttt{\$\_DFF}。）
+  \item 把 \texttt{TRI\_WIDTH} 从 15 改为 13，重新仿真。占空比变化周期发生了什么？为什么？
+  \item 从"为什么需要综合器"（Why）、"综合器做什么"（What）、"怎么用 Yosys"（How）三个维度分析 Yosys，并对比仿真器和综合器的区别。
+  \item 修改比较逻辑让 LED 在计数器值小时亮。仿真确认波形变化。这在物理板上意味着什么？
+  \item 搜索一个本章未涉及的开源工具（OpenROAD、F4PGA、Verilator、Cocotb 等），说明它做什么、对应本章哪个工具、强在哪/弱在哪。
+  \item 查阅 Digilent Basys3 官方参考手册，整理它的 FPGA 芯片的逻辑资源数量、板载的外设功能和供电方式。
 \end{enumerate}
 
 \end{document}

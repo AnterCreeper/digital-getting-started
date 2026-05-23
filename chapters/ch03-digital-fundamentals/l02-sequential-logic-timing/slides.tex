@@ -20,6 +20,7 @@
   \item 区分 latch、flip-flop、register、register chain 与 state machine 的作用
   \item 建立“寄存器边界 + 组合逻辑锥”的观察框架
   \item 理解 propagation delay、setup、hold、skew、uncertainty 与 metastability 的工程含义
+  \item 能对简单寄存器到寄存器路径计算最基本的 setup / hold 延迟约束
 \end{itemize}
 \end{frame}
 
@@ -27,9 +28,10 @@
 \begin{enumerate}
   \item 为什么引入寄存器后，系统语义就变了
   \item latch / flop / register 分别在解决什么问题
-  \item 状态机怎样把状态寄存器、下一状态逻辑和输出逻辑接起来
-  \item setup / hold / skew / uncertainty 为什么是同步系统的成立条件
+  \item 先对零 skew 路径做 setup / hold 计算
+  \item 再看 skew / uncertainty 怎样修正这些约束
   \item 异步输入与跨时钟域为什么会挑战数字抽象
+  \item 状态机只是这种时序组织方式的常见骨架
 \end{enumerate}
 \end{frame}
 
@@ -67,6 +69,9 @@
     \item \textbf{Register}：一组并行触发器，用来保存多位状态
     \item \textbf{Register chain}：多个寄存器首尾相接，用来切分路径或同步数据
   \end{itemize}
+
+  \vspace{0.4em}
+  \scriptsize 这张主从触发器图按真实结构复刻；本讲重点先放在它抽出的边沿采样语义与时序窗口。
 \end{columns}
 \end{frame}
 
@@ -86,22 +91,6 @@
 \end{columns}
 \end{frame}
 
-\begin{frame}{State Machine Anatomy}
-\begin{columns}[T]
-  \column{0.50\linewidth}
-  \centering
-  \includegraphics[width=0.92\linewidth]{mealy.jpeg}
-  \column{0.46\linewidth}
-  \small
-  \begin{itemize}
-    \item 状态机通常由三部分组成：状态寄存器、下一状态逻辑、输出逻辑
-    \item Moore 机：输出主要由状态决定
-    \item Mealy 机：输出可同时受当前状态与输入影响
-    \item Moore / Mealy 差异不是背定义，而是观察输出何时变化、是否更容易受输入毛刺影响
-  \end{itemize}
-\end{columns}
-\end{frame}
-
 \begin{frame}{Propagation Delay, Setup, Hold}
 \begin{columns}[T]
   \column{0.52\linewidth}
@@ -116,6 +105,52 @@
     \item 这两个窗口不是礼貌性建议，而是触发器可靠采样的边界条件
   \end{itemize}
 \end{columns}
+\end{frame}
+
+\begin{frame}{The Minimal Timing Calculation}
+\small
+先在 \textbf{零 skew、零 uncertainty} 的简化情形下计算：
+
+\vspace{0.5em}
+\begin{block}{Setup check}
+\centering
+\texttt{Tclk >= t\_clk->q,max + t\_comb,max + t\_setup}
+\end{block}
+
+\begin{block}{Hold check}
+\centering
+\texttt{t\_clk->q,min + t\_comb,min >= t\_hold}
+\end{block}
+
+\vspace{0.4em}
+\begin{itemize}
+  \item setup 看的是 \textbf{最长路径} 能否在一个周期内赶到
+  \item hold 看的是 \textbf{最短路径} 会不会过早冲到终点寄存器
+  \item 后续再把 skew / uncertainty 作为修正项加进去
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Adding Skew and Uncertainty}
+\small
+在真实系统里，时钟到达两端寄存器的时刻并不完全相同，因此要把修正项加回去：
+
+\vspace{0.5em}
+\begin{block}{Setup intuition}
+\centering
+\texttt{Tclk >= t\_clk->q,max + t\_comb,max + t\_setup + uncertainty - useful skew}
+\end{block}
+
+\begin{block}{Hold intuition}
+\centering
+\texttt{t\_clk->q,min + t\_comb,min >= t\_hold + uncertainty + harmful skew}
+\end{block}
+
+\vspace{0.4em}
+\begin{itemize}
+  \item 对 setup 有利的 skew 可以“借一点时间”
+  \item 对 hold 不利的 skew 会让终点寄存器更晚关窗
+  \item 第一次教学先抓方向感，不要求在这一讲把所有符号约定一次背完
+\end{itemize}
 \end{frame}
 
 \begin{frame}{What a Setup Violation Means}
@@ -156,6 +191,22 @@
   时钟不是一根“全芯片同时生效”的理想魔法线。\newline
   时钟本身也是一张需要被设计、约束和分析的物理网络。
   \end{alertblock}
+\end{columns}
+\end{frame}
+
+\begin{frame}{State Machine as a Structured Use of Registers}
+\begin{columns}[T]
+  \column{0.50\linewidth}
+  \centering
+  \includegraphics[width=0.92\linewidth]{mealy.jpeg}
+  \column{0.46\linewidth}
+  \small
+  \begin{itemize}
+    \item 状态机通常由三部分组成：状态寄存器、下一状态逻辑、输出逻辑
+    \item Moore 机：输出主要由状态决定
+    \item Mealy 机：输出可同时受当前状态与输入影响
+    \item 这一讲先把它当作“寄存器 + 组合逻辑”的标准骨架，不展开编码和实现细节
+  \end{itemize}
 \end{columns}
 \end{frame}
 
@@ -230,10 +281,10 @@
 
 \begin{frame}{Takeaways}
 \begin{itemize}
-  \item 寄存器把系统从组合语义推进到状态语义，状态机是这种组织方式的标准骨架
-  \item setup / hold / skew / uncertainty 定义了同步系统能否可靠工作的时间边界
+  \item 寄存器把系统从组合语义推进到状态语义，寄存器边界决定了系统如何被切分
+  \item setup / hold 先用最长路径 / 最短路径计算，skew / uncertainty 再作为修正项加入
   \item metastability 提醒我们：异步世界总会挑战数字抽象，只能通过同步策略降低风险
-  \item 进入下一章 RTL 之前，最重要的是先把这些语义边界看清楚，而不是急着背语法
+  \item 状态机是这套时序组织方式的常见骨架；进入下一章前，先把语义边界看清楚比背语法更重要
 \end{itemize}
 \end{frame}
 
@@ -241,7 +292,7 @@
 请完成三件事：
 \begin{enumerate}
   \item 画出一个寄存器-组合逻辑-寄存器结构，并标出 setup / hold 检查窗口
-  \item 给出一个简单状态机，说明哪些部分属于状态寄存器，哪些属于组合逻辑
+  \item 给定 \texttt{t\_clk->q}、\texttt{t\_comb,max}、\texttt{t\_comb,min}、\texttt{t\_setup}、\texttt{t\_hold}，计算该路径是否满足 setup / hold
   \item 解释为什么异步按键直接送入主时钟域寄存器会带来风险，双触发器同步器能解决什么、不能解决什么
 \end{enumerate}
 \end{frame}
